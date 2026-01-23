@@ -64,7 +64,7 @@ app.get("/api/waterlevel", async (req, res) => {
   const station = req.query.station || "板橋"; // 預設測站（可自行改）
 
   try {
-    const url = "https://fhy.wra.gov.tw/WraApi/v1/Water/RealTimeWaterLevel?format=JSON";
+    const url = "https://opendata.wra.gov.tw/api/v2/c4acc691-7416-40ca-9464-292c0c00da92?page=1&size=1000";
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`水利署 API 回傳錯誤狀態碼：${response.status}`);
@@ -145,4 +145,5 @@ app.get("/api/earthquake", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ 智慧災害系統伺服器啟動：http://localhost:${PORT}`);
 });
+
 
