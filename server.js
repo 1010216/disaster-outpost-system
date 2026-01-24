@@ -131,10 +131,30 @@ app.get("/api/earthquake", async (req, res) => {
     //res.json({ time: "2025-10-12", location: "台灣東部外海", magnitude: "4.8" });
   }
 });
+async function fetchEarthquake() {
+  try {
+    const res = await axios.get(`https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0015-001?Authorization=${CWA_KEY}`)
+
+    const quake = res.data.records.Earthquake[0]
+    const mag = quake.EarthquakeInfo.EarthquakeMagnitude.MagnitudeValue
+    const lat = quake.EarthquakeInfo.Epicenter.EpicenterLatitude
+    const lon = quake.EarthquakeInfo.Epicenter.EpicenterLongitude
+    const originTime = quake.EarthquakeInfo.OriginTime
+
+    const dist = distanceKm(USER_LAT, USER_LON, lat, lon)
+    const sampleAmplitude = mag * 10
+
+    const eewEvent = processWaveSample(sampleAmplitude, dist, originTime)
+    if (eewEvent) broadcast(eewEvent)
+  } catch (err) {
+    console.error('Fetch error', err.message)
+  }
+};
 
 app.listen(PORT, () => {
   console.log(`✅ 智慧災害系統伺服器啟動：http://localhost:${PORT}`);
 });
+
 
 
 
