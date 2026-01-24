@@ -200,24 +200,87 @@
     document.getElementById('locationBtn').addEventListener('click', getUserLocation);
 
   </script>
- <h1>地震即時資訊系統</h1>
-  <p>等待資料中…</p>
+ <!-- 全螢幕 EEW 警報 -->
+<div id="eewAlertFull" style="
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100vw;
+  height:100vh;
+  background:red;
+  color:white;
+  font-size:2em;
+  text-align:center;
+  z-index:9999;
+  padding-top:20vh;
+">
+  <h1>⚠️ 地震警報</h1>
+  <p id="eewInfoFull"></p>
+  <p>預估 <span id="eewCountdownFull"></span> 秒後強烈搖晃</p>
+  <button id="closeEEW" style="
+    position:absolute;
+    top:20px;
+    right:20px;
+    padding:10px 20px;
+    font-size:1em;
+    background:#fff;
+    color:red;
+    border:none;
+    cursor:pointer;
+  ">關閉</button>
+</div>
 
-  <!-- EEW 警報區塊 -->
-  <div id="eewAlert" style="display:none; background:red; color:white; padding:30px; margin-top:20px; font-size:1.5em;">
-    <h2>⚠️ 地震警報</h2>
-    <p id="eewInfo"></p>
-    <p>預估 <span id="eewCountdown"></span> 秒後強烈搖晃</p>
-  </div>
+<!-- 模擬測試按鈕 -->
+<button id="testBtn" style="margin-top:15px; padding:10px 20px; font-size:1.2em;">模擬地震警報</button>
 
-  <!-- 模擬測試按鈕 -->
-  <button id="testBtn" style="margin-top:15px; padding:10px 20px; font-size:1.2em;">模擬地震警報</button>
+<script>
+  const ws = new WebSocket('ws://localhost:3001')
+  let timerFull = null
 
-  <!-- 你的 JS 連線和觸發函數 -->
-  <script src="main.js"></script>
+  function showEEWFull(data) {
+    document.getElementById('eewAlertFull').style.display = 'block'
+    document.getElementById('eewInfoFull').innerText = `規模 ${data.magnitude}，距離 ${data.distance || '?'} km`
+
+    let t = data.sWaveArriveIn
+    document.getElementById('eewCountdownFull').innerText = t
+
+    clearInterval(timerFull)
+    timerFull = setInterval(() => {
+      t--
+      document.getElementById('eewCountdownFull').innerText = t
+      if (t <= 0) clearInterval(timerFull)
+    }, 1000)
+  }
+
+  // WebSocket 收到 EEW
+  ws.onmessage = e => {
+    const data = JSON.parse(e.data)
+    if (data.type === 'EEW') showEEWFull(data)
+  }
+
+  // 模擬按鈕事件
+  document.getElementById('testBtn').addEventListener('click', () => {
+    const testData = {
+      type: 'EEW',
+      magnitude: 6.5,
+      distance: 50,
+      sWaveArriveIn: 15,
+      originTime: new Date().toISOString()
+    }
+    showEEWFull(testData)
+  })
+
+  // 關閉按鈕事件
+  document.getElementById('closeEEW').addEventListener('click', () => {
+    document.getElementById('eewAlertFull').style.display = 'none'
+    clearInterval(timerFull)
+  })
+</script>
+
 
 </body>
 </html>
+
 
 
 
