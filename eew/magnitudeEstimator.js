@@ -1,3 +1,3 @@
-export default function estimateMagnitude(a, d) {
-  return Math.log10(a) + Math.log10(d) + 1.0
+export default function estimateMagnitude(amplitude, distanceKm) {
+  return Math.log10(amplitude) + Math.log10(distanceKm) + 1.0
 }
