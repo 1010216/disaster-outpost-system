@@ -200,9 +200,91 @@
     document.getElementById('locationBtn').addEventListener('click', getUserLocation);
 
   </script>
+  <!-- 全螢幕 EEW 警報 -->
+<div id="eewAlertFull" style="
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background-color:red;
+  color:white;
+  font-size:2em;
+  text-align:center;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+">
+  <h1>⚠️ 地震警報</h1>
+  <p id="eewInfoFull"></p>
+  <p>預估 <span id="eewCountdownFull"></span> 秒後強烈搖晃</p>
+  <button id="closeEEW" style="
+    margin-top:20px;
+    padding:10px 20px;
+    font-size:1.2em;
+    background:white;
+    color:red;
+    border:none;
+    cursor:pointer;
+  ">關閉</button>
+</div>
+
+<!-- 模擬測試按鈕 -->
+<button id="testBtn" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); padding:10px 20px; font-size:1.2em;">模擬地震警報</button>
+
+<script>
+  const ws = new WebSocket('ws://localhost:3001')
+  let timerFull = null
+
+  function showEEWFull(data) {
+    const alertDiv = document.getElementById('eewAlertFull')
+    alertDiv.style.display = 'flex' // flex 讓內容置中
+
+    document.getElementById('eewInfoFull').innerText = `規模 ${data.magnitude}，距離 ${data.distance || '?'} km`
+
+    let t = data.sWaveArriveIn
+    document.getElementById('eewCountdownFull').innerText = t
+
+    clearInterval(timerFull)
+    timerFull = setInterval(() => {
+      t--
+      document.getElementById('eewCountdownFull').innerText = t
+      if (t <= 0) clearInterval(timerFull)
+    }, 1000)
+  }
+
+  // WebSocket 收到 EEW
+  ws.onmessage = e => {
+    const data = JSON.parse(e.data)
+    if (data.type === 'EEW') showEEWFull(data)
+  }
+
+  // 模擬按鈕
+  document.getElementById('testBtn').addEventListener('click', () => {
+    const testData = {
+      type: 'EEW',
+      magnitude: 6.5,
+      distance: 50,
+      sWaveArriveIn: 15,
+      originTime: new Date().toISOString()
+    }
+    showEEWFull(testData)
+  })
+
+  // 關閉按鈕
+  document.getElementById('closeEEW').addEventListener('click', () => {
+    document.getElementById('eewAlertFull').style.display = 'none'
+    clearInterval(timerFull)
+  })
+</script>
+
 
 </body>
 </html>
+
 
 
 
