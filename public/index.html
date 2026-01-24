@@ -233,7 +233,7 @@
 </div>
 
 <!-- 模擬測試按鈕 -->
-<button id="testBtn" style="position:fixed; bottom:20px; left:50%; transform:translateX(-50%); padding:10px 20px; font-size:1.2em;">模擬地震警報</button>
+<button id="testBtn">模擬地震警報</button>
 
 <script>
   const ws = new WebSocket('ws://localhost:3001')
@@ -264,15 +264,16 @@
 
   // 模擬按鈕
   document.getElementById('testBtn').addEventListener('click', () => {
-    const testData = {
-      type: 'EEW',
-      magnitude: 6.5,
-      distance: 50,
-      sWaveArriveIn: 15,
-      originTime: new Date().toISOString()
-    }
-    showEEWFull(testData)
-  })
+  const testData = {
+    type: 'EEW',
+    magnitude: 6.5,
+    distance: 50,
+    sWaveArriveIn: 15,
+    originTime: new Date().toISOString()
+  }
+  showEEWFull(testData)
+})
+
 
   // 關閉按鈕
   document.getElementById('closeEEW').addEventListener('click', () => {
@@ -283,3 +284,4 @@
 
 </body>
 </html>
+
