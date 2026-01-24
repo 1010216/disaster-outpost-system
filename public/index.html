@@ -200,59 +200,25 @@
     document.getElementById('locationBtn').addEventListener('click', getUserLocation);
 
   </script>
-      <!-- EEW 警報區塊 -->
-    <div id="eewAlert" style="display:none; background:red; color:white; padding:30px; margin-top:20px; font-size:1.5em;">
-      <h2>⚠️ 地震警報</h2>
-      <p id="eewInfo"></p>
-      <p>預估 <span id="eewCountdown"></span> 秒後強烈搖晃</p>
-    </div>
-    
-    <!-- 模擬測試按鈕 -->
-    <button id="testBtn" style="margin-top:15px; padding:10px 20px; font-size:1.2em;">模擬地震警報</button>
-    
-    <script>
-      // 連線到你的 WebSocket
-      const ws = new WebSocket('ws://localhost:3001')
-      let timer = null
-    
-      ws.onmessage = e => {
-        const data = JSON.parse(e.data)
-        showEEWAlert(data)
-      }
-    
-      // 顯示 EEW 警報的函數
-      function showEEWAlert(data) {
-        if (data.type === 'EEW') {
-          document.getElementById('eewAlert').style.display = 'block'
-          document.getElementById('eewInfo').innerText = `規模 ${data.magnitude}，距離 ${data.distance || '?'} km`
-    
-          let t = data.sWaveArriveIn
-          document.getElementById('eewCountdown').innerText = t
-    
-          clearInterval(timer)
-          timer = setInterval(() => {
-            t--
-            document.getElementById('eewCountdown').innerText = t
-            if (t <= 0) clearInterval(timer)
-          }, 1000)
-        }
-      }
-    
-      // 測試按鈕事件
-      document.getElementById('testBtn').addEventListener('click', () => {
-        const testData = {
-          type: 'EEW',
-          magnitude: 6.5,
-          distance: 50,
-          sWaveArriveIn: 15,
-          originTime: new Date().toISOString()
-        }
-        showEEWAlert(testData)
-      })
-  </script>
+ <h1>地震即時資訊系統</h1>
+  <p>等待資料中…</p>
+
+  <!-- EEW 警報區塊 -->
+  <div id="eewAlert" style="display:none; background:red; color:white; padding:30px; margin-top:20px; font-size:1.5em;">
+    <h2>⚠️ 地震警報</h2>
+    <p id="eewInfo"></p>
+    <p>預估 <span id="eewCountdown"></span> 秒後強烈搖晃</p>
+  </div>
+
+  <!-- 模擬測試按鈕 -->
+  <button id="testBtn" style="margin-top:15px; padding:10px 20px; font-size:1.2em;">模擬地震警報</button>
+
+  <!-- 你的 JS 連線和觸發函數 -->
+  <script src="main.js"></script>
 
 </body>
 </html>
+
 
 
 
