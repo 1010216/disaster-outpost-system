@@ -1,28 +1,24 @@
-class PWaveDetector {
-  constructor(staWindow = 5, ltaWindow = 50, threshold = 3.0) {
-    this.staWindow = staWindow
-    this.ltaWindow = ltaWindow
+export default class PWaveDetector {
+  constructor(sta = 5, lta = 50, threshold = 3.0) {
+    this.sta = sta
+    this.lta = lta
     this.threshold = threshold
     this.buffer = []
   }
 
-  addSample(sample) {
-    this.buffer.push(Math.abs(sample))
-    if (this.buffer.length > this.ltaWindow) {
-      this.buffer.shift()
-    }
+  addSample(v) {
+    this.buffer.push(Math.abs(v))
+    if (this.buffer.length > this.lta) this.buffer.shift()
   }
 
   isPWaveDetected() {
-    if (this.buffer.length < this.ltaWindow) return false
-    const sta = average(this.buffer.slice(-this.staWindow))
-    const lta = average(this.buffer)
-    return sta / lta >= this.threshold
+    if (this.buffer.length < this.lta) return false
+    const sta = avg(this.buffer.slice(-this.sta))
+    const lta = avg(this.buffer)
+    return sta / lta > this.threshold
   }
 }
 
-function average(arr) {
-  return arr.reduce((a, b) => a + b, 0) / arr.length
+function avg(a) {
+  return a.reduce((x, y) => x + y, 0) / a.length
 }
-
-module.exports = PWaveDetector
